@@ -11,7 +11,7 @@ const healthCheck = async () => {
 
 const getFolderStructure = async () => {
     const response = await axios.get(`${backend_url}/get-folder-structure`);
-    // console.log(response.data);
+    // console.log(response?.data);
     return response.data;
 }
 const getfiledata = async (path) => {

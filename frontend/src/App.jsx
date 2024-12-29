@@ -4,6 +4,7 @@ import Editor from './Editor.jsx';
 import { io } from "socket.io-client";
 import { getFolderStructure, getfiledata } from '../server/server.js';
 import TreeExample from './TreeExample.jsx';
+import { stringify } from 'postcss';
 
 function App() {
   const [term, setTerm] = useState(null);
@@ -11,6 +12,12 @@ function App() {
   const [FolderStructure, setFolderStructure] = useState([]);
   const [FileData, setFileData] = useState('Hello world!');
   const socket = io(String(import.meta.env.VITE_BACKEND_URL));
+
+  const handleFolderStructure = async() => {
+    getFolderStructure().then((data) => {
+      setFolderStructure(data);
+    });
+  }
 
   useEffect(() => {
     let terminal;
@@ -72,6 +79,7 @@ function App() {
     });
 
     socket.on("Terminal-output", (arg) => {
+      handleFolderStructure();
       terminal.write(`\r\n ${arg}`);
     });
 
@@ -82,14 +90,16 @@ function App() {
   }, []);
 
   useEffect(() => {
-    getFolderStructure().then((data) => {
-      setFolderStructure(data);
-    });
+    handleFolderStructure();
   }, [PageState, term]);
 
   useEffect(() => {
     if (PageState !== '') {
       getfiledata(PageState).then((data) => {
+        // check if data is an object
+        if (typeof data === 'object') {
+          data = JSON.stringify(data, null, 2);
+        }
         setFileData(data);
       });
     }

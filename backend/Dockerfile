@@ -9,11 +9,12 @@ RUN apt-get update && \
 RUN curl -sL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get install -y nodejs
 
+
+EXPOSE 3000
 COPY package*.json ./
 RUN npm install
 
 COPY . .
 
-EXPOSE 3000
 
 CMD ["npm", "start"]

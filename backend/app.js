@@ -12,35 +12,26 @@ export const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
-    allowedHeaders: ["my-custom-header"],
-    credentials: true
+    origin: "https://codeforge.netlify.app/",
   }
 });
 
 app.use(express.static(path.resolve('./User_Folder')));
 app.use(express.json());
+app.use(express.text());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-    origin: (origin, callback) => {
-        if (!origin || origin.includes('localhost')) return callback(null, true);
-
-        const allowedOrigins = [
-            /^https?:\/\/.*\.netlify\.app$/,
-            /^https?:\/\/.*\.vercel\.app$/ 
-        ];
-        if (allowedOrigins.some(regex => regex.test(origin))) return callback(null, true);
-        callback(new Error('Not allowed by CORS'));
-    },
-    credentials: true
+    origin: 'https://codeforge.netlify.app/',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 
 const ptyProcess = pty.spawn('bash', [], {
   name: 'xterm-color',
-  cols: 80,
-  rows: 30,
+  cols: 100,
+  rows: 40,
   cwd: `${process.cwd()}/User_Folder`,
   env: process.env,
 });
@@ -55,7 +46,6 @@ io.on('connection', (socket) => {
 
   socket.on('Terminal-input', (data) => {
     ptyProcess.write(data);
-    // console.log(data);
   });
 
   socket.on('disconnect', () => {
@@ -100,7 +90,11 @@ app.get('/get-file-content', (req, res) => {
   const path_ = path.resolve(`./User_Folder${req.query?.path}`);
   // console.log(path_);
   const content = fs.readFileSync(path_, 'utf-8');
-  res.send(content);
+  if(path_.endsWith('.json')) {
+    res.send(JSON.parse(content));
+    return;
+  }
+  res.send(String(content));
 });
 
 app.post('/save-file-content', (req, res) => {
