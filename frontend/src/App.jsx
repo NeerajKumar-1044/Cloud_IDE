@@ -46,7 +46,10 @@ function App() {
       terminal.focus();
 
       terminal.onData((data) => {
-        if (data === '\r') {
+        if (data === '\u0003') {
+          terminal.write('^C\n');
+          socket.emit('Terminal-input', data);
+        } else if (data === '\r') {
           socket.emit('Terminal-input', inputBuffer + '\n');
           inputBuffer = '';
         } else if (data === '\u007F') {
@@ -59,6 +62,7 @@ function App() {
           terminal.write(data);
         }
       });
+      
 
       setTerm(terminal);
 

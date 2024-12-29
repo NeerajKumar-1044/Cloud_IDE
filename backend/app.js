@@ -12,7 +12,7 @@ export const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "https://codeforge.netlify.app/",
+    origin: "https://codeforge.netlify.app",
   }
 });
 
@@ -21,7 +21,7 @@ app.use(express.json());
 app.use(express.text());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-    origin: 'https://codeforge.netlify.app/',
+    origin: 'https://codeforge.netlify.app',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
@@ -45,7 +45,11 @@ io.on('connection', (socket) => {
   console.log(`a user connected: ${socket.id}`);
 
   socket.on('Terminal-input', (data) => {
-    ptyProcess.write(data);
+    if (data === '\u0003') {
+      ptyProcess.kill('SIGINT');
+    } else {
+      ptyProcess.write(data);
+    }
   });
 
   socket.on('disconnect', () => {
