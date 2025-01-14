@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import {User} from '../models/User.model.js';
-import { verifyGoogleToken } from '../config/google_auth.js';
+import { verifyGoogleToken } from '../Config/google_auth.js';
 
 // Register user
 export const registerUser = async (req, res) => {
