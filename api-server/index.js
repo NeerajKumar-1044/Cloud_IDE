@@ -1,9 +1,9 @@
 import 'dotenv/config'
-import {connectDb} from './DB/db.js'
-import app from "./app.js"
+import {connectDb} from './Config/db.js'
+import {app} from "./app.js"
 
 
-const port = process.env.PORT ?? 3000;
+const port = process.env.PORT ?? 5001;
 
 try {
     connectDb().then(async () => {

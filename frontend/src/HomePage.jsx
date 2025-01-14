@@ -29,12 +29,19 @@ function HomePage() {
       </div>
 
       {/* Main Button Section */}
-      <div className="flex-grow flex flex-col justify-center items-center">
+      <div className="flex-grow flex flex-col justify-center items-center gap-3">
         <button
-          className={`text-2xl bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-3 rounded-full shadow-lg transform transition-all duration-300 hover:scale-105 ${
+          className="text-2xl w-60 h-20 bg-blue-400 text-white px-6 py-3 rounded-3xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:bg-blue-500"
+          onClick={() => navigate('/user/dashboard')}
+        >
+          Go to Dashboard
+        </button>
+
+        <button
+          className={`text-2xl bg-blue-500 w-60 h-20 text-white px-6 py-3 rounded-3xl shadow-lg transform transition-all duration-300 hover:scale-105 ${
             status !== 'Start Coding'
               ? 'opacity-50 cursor-not-allowed'
-              : 'hover:from-indigo-600 hover:to-blue-500'
+              : 'hover:bg-blue-500'
           }`}
           onClick={() => navigate('/main')}
           disabled={status !== 'Start Coding'}
@@ -42,6 +49,8 @@ function HomePage() {
           {status}
         </button>
       </div>
+
+      
 
       {/* Footer Section */}
       <div className="w-full flex items-center justify-center py-4 bg-gray-100 border-t border-gray-300 text-gray-500 text-sm">

@@ -1,5 +1,6 @@
 import mongoose, {model, Schema} from 'mongoose';
-
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 
 const UserSchema  =new Schema({
     username: {
@@ -13,8 +14,7 @@ const UserSchema  =new Schema({
         required: true
     },
     password: {
-        type: String,
-        required: true
+        type: String
     },
     classRoomEnrolledIn: {
         type: Schema.Types.ObjectId,
@@ -42,5 +42,11 @@ const UserSchema  =new Schema({
     }]
     
 }, {timestamps: true});
+
+
+UserSchema.methods.generateAuthToken = function () {
+    const token = jwt.sign({ id: this._id, role: this.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    return token;
+  };
 
 export const User = model('User', UserSchema);
