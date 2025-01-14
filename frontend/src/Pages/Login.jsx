@@ -27,7 +27,7 @@ function Login() {
 
     useEffect(() => {
         if(import.meta.env.VITE_GOOGLE_CLIENT_ID){
-            console.log('Google Client ID:', String(import.meta.env.VITE_GOOGLE_CLIENT_ID).substring(0, 5) + '...');
+            console.log('Google Client ID:');
         }
     }
     , []);
