@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import Button from '../Components/Button';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
@@ -24,6 +24,13 @@ function Login() {
             setError('Google login failed');
         }
     }
+
+    useEffect(() => {
+        if(import.meta.env.VITE_GOOGLE_CLIENT_ID){
+            console.log('Google Client ID:', String(import.meta.env.VITE_GOOGLE_CLIENT_ID).substring(0, 5) + '...');
+        }
+    }
+    , []);
 
 
 
@@ -103,7 +110,6 @@ function Login() {
                             console.log(response);
                             handleGoogleLogin(response);
                         }}
-                        // onError={() => setError('Google login failed')}
                         useOneTap
                         size="large"
                         shape="pill"
