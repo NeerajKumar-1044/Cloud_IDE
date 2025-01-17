@@ -3,6 +3,23 @@ import jwt from 'jsonwebtoken';
 import {User} from '../models/User.model.js';
 import { verifyGoogleToken } from '../Config/google_auth.js';
 
+
+const options = {
+  httpOnly: true,
+  secure: true,
+  sameSite: 'None',
+};
+
+const GenerateToken = async (userid) => {
+  const user =await User.findById(userid);
+  const AccessToken = await user.generateAccessToken();
+  const RefreshToken = await user.generateRefreshToken();
+  user.refreshToken = RefreshToken;
+  await user.save({ validateBeforeSave: false });
+
+  return AccessToken;
+}
+
 // Register user
 export const registerUser = async (req, res) => {
   const { name, email, password, role } = req.body;
@@ -16,8 +33,12 @@ export const registerUser = async (req, res) => {
     const newUser = new User({ name, email, password: hashedPassword, role });
     await newUser.save();
 
-    const token = newUser.generateAuthToken();
-    res.status(201).json({ token, user: newUser });
+    const AccessToken = await GenerateToken(user?._id);
+    
+    res
+    .cookie('AccessToken', AccessToken, options)
+    .json({ newUser });
+
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err });
   }
@@ -34,8 +55,12 @@ export const loginUser = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
-    const token = user.generateAuthToken();
-    res.json({ token, user });
+    const AccessToken = await GenerateToken(user?._id);
+    
+    res
+    .cookie('AccessToken', AccessToken, options)
+    .json({ user });
+
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err });
   }
@@ -50,18 +75,23 @@ export const googleAuth = async (req, res) => {
     const googleUser = await verifyGoogleToken(token); // Verify the token
     // console.log(googleUser);
     let user = await User.findOne({ email: googleUser.email });
-    // console.log(user);
+
+    console.log("user already exists:- ");
     if (!user) {
         user = await User.create({
           username: googleUser.given_name,
           email: googleUser.email,
-          password: googleUser.sub,
+          password: process.env.PASSWORD_KEY
       });
       await user.save();
     }
 
-    // const jwtToken = user.generateAuthToken(); // Generate your app's token
-    res.json({ user }); // Send the token to the frontend
+    const AccessToken = await GenerateToken(user?._id);
+    
+    res
+    .cookie('AccessToken', AccessToken, options)
+    .json({ user });
+
   } catch (err) {
     res.status(400).json({ message: 'Google authentication failed', error: err });
   }
@@ -69,6 +99,19 @@ export const googleAuth = async (req, res) => {
 
 
 // Logout user
-export const logoutUser = (req, res) => {
-  res.json({ message: 'Logged out successfully' });
+export const logoutUser = async(req, res) => {
+
+  const userid = req.user._id;
+  try {
+    await User.findByIdAndUpdate(userid, { refreshToken: '' }, { new: true });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error, Failed to remove session:-', error });
+  }
+
+  res
+  .status(200)
+  .clearCookie('AccessToken')
+  .json({ message: 'Logged out successfully 🫤' });
 };
+
+

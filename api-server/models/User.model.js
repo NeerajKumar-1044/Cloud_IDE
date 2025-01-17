@@ -16,6 +16,9 @@ const UserSchema  =new Schema({
     password: {
         type: String
     },
+    refreshToken: {
+        type: String
+    },
     classRoomEnrolledIn: {
         type: Schema.Types.ObjectId,
         ref: 'ClassRoom'
@@ -44,9 +47,34 @@ const UserSchema  =new Schema({
 }, {timestamps: true});
 
 
-UserSchema.methods.generateAuthToken = function () {
-    const token = jwt.sign({ id: this._id, role: this.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+UserSchema.pre("save", async function (next) {
+    if (!this.isModified("password")) return next();
+    this.password = await bcrypt.hash(this.password, 10);
+    next();
+});
+
+UserSchema.methods.generateAccessToken = function () {
+    const token = jwt.sign({ 
+        id: this._id, 
+        name: this.name 
+    }, 
+    process.env.ACCESS_TOKEN_SECRET,
+    { expiresIn: process.env.REFRESH_TOKEN_EXPIRY });
     return token;
   };
+UserSchema.methods.generateRefreshToken = function () {
+    const token = jwt.sign({ 
+        id: this._id, 
+        name: this.name 
+    }, 
+    process.env.REFRESH_TOKEN_SECRET,
+    { expiresIn: process.env.ACCESS_TOKEN_EXPIRY });
+    return token;
+  };
+
+UserSchema.methods.isPasswordCorrect = async function (password) {
+    return await bcrypt.compare(password, this.password);
+};
 
 export const User = model('User', UserSchema);

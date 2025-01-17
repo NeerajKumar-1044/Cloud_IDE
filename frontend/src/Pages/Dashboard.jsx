@@ -1,8 +1,11 @@
 import React from 'react';
-import Navbar from '../Components/Navbar';
 import Question from '../Components/Question';
+import { useNavigate } from 'react-router-dom';
 
 function Dashboard() {
+
+    const navigate = useNavigate();
+
     return (
         <div className='bg-gray-100 h-screen'>
             
@@ -16,7 +19,13 @@ function Dashboard() {
                     <div
                         className="h-36 flex justify-center items-center p-8 border border-gray-300 bg-white text-2xl font-bold rounded-lg shadow-md transition-transform transform hover:scale-110 hover:shadow-lg cursor-pointer"
                     >
-                        <h2 className="text-gray-700">Create ClassRoom</h2>
+                        <h2 
+                        className="text-gray-700"
+                        onClick={()=> {
+                            console.log('Create ClassRoom');
+                            navigate('/user/create-class')
+                        }}
+                        >Create ClassRoom</h2>
                     </div>
                 </div>
             </div>

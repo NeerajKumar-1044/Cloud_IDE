@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import authRoutes from './routes/auth.route.js';
+import classRoutes from './routes/classroom.route.js';
 import cookieParser from 'cookie-parser';
 
 
@@ -26,5 +27,11 @@ app.use(cors({
 }));
 
 
+app.get('/health-check', (req, res) => {
+    res.send('Server is up and running 👍');
+});
+
+
 app.use('/api/users', authRoutes);
+app.use('/api/classroom', classRoutes);
 

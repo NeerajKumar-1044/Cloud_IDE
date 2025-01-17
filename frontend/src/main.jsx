@@ -12,21 +12,25 @@ import Register from './Pages/Register.jsx';
 import ClassRoom from './Pages/ClassRoom.jsx';
 import MyClassRoom from './Pages/MyClassRoom.jsx';
 import Contest from './Pages/Contest.jsx';
+import CreateClass from './Components/CreateClass.jsx'
 
 
 const router = createBrowserRouter([
-  {path: '/', element: <Home />, children: [
-    {path: '', element: <HomePage />},
-    {path: 'main', element: <App />},
-    {path: 'user', element: <Frontpage />, children: [
-      {path: 'dashboard', element: <Dashboard />},
-      {path: 'classrooms', element: <ClassRoom />},
-      {path: 'my-classrooms', element: <MyClassRoom />},
-      {path: 'contests', element: <Contest />},
-    ]
-    },
-    {path: 'login-user', element: <Login />},
-    {path: 'register-user', element: <Register />},
+  {
+    path: '/', element: <Home />, children: [
+      { path: '', element: <HomePage /> },
+      { path: 'main', element: <App /> },
+      {
+        path: 'user', element: <Frontpage />, children: [
+          { path: 'dashboard', element: <Dashboard /> },
+          { path: 'classrooms', element: <ClassRoom />},
+          { path: 'create-class', element: <CreateClass /> },
+          { path: 'my-classrooms', element: <MyClassRoom /> },
+          { path: 'contests', element: <Contest /> },
+        ]
+      },
+      { path: 'login-user', element: <Login /> },
+      { path: 'register-user', element: <Register /> },
     ]
   }
 ])

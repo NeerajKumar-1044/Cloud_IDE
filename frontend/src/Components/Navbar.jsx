@@ -1,6 +1,6 @@
-import React, { useState, useCallback , useEffect} from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useUser } from '../Store/zustand.js';
-// import { LogOut } from '../Server/Server.js';
+import { LogOut } from '../../server/server.js';
 import Button from './Button.jsx';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,21 +11,37 @@ function Navbar() {
     const navigate = useNavigate();
     // console.log("Username:- ", user?.name);
 
+    const [logoutStatus, setLogoutStatus] = useState('Logout');
+
     const toggleDropdown = () => {
         setDropdownOpen(!isDropdownOpen);
     };
 
     const handleLogout = async () => {
-        console.log("Logout clicked");
-        setUser(null);
-        setDropdownOpen(!isDropdownOpen);
-        // await LogOut();
+        try {
+            console.log("Logout clicked");
+            setLogoutStatus('Logging out...');
+            const res = await LogOut();
+            if(!res || res.status >= 300) {
+                setLogoutStatus('Logout');
+                return;
+            }
+            setUser(null);
+            setDropdownOpen(!isDropdownOpen);
+            console.log(res);
+            alert(res?.message || "Logged out successfully 😀");
+        } catch (error) {
+            setLogoutStatus('Logout');
+            console.error('Error while logging out:- ', error);
+        }
+
     }
 
     useEffect(() => {
         setDropdownOpen(false);
-      }
-      , [navigate, user, setUser]);
+        setLogoutStatus('Logout');
+    }
+        , [navigate, user, setUser]);
 
     return (
         <nav className="bg-gray-100 border-b border-gray-300 shadow-lg">
@@ -33,15 +49,15 @@ function Navbar() {
                 {/* Logo Section */}
                 <div className="flex items-center space-x-3 rtl:space-x-reverse cursor-pointer"
                     onClick={() => navigate("/")}
-                    >
+                >
                     <img
                         src="https://img.icons8.com/?size=100&id=IWS7YZ1UX58d&format=png&color=000000"
                         className="h-10 "
                         alt="Logo"
-                        // onClick={() => window.open('https://www.iitj.ac.in/', '_blank')}
+                    // onClick={() => window.open('https://www.iitj.ac.in/', '_blank')}
                     />
                     <span className="text-2xl font-semibold text-gray-800"
-                        // onClick={() => navigate("/")}
+                    // onClick={() => navigate("/")}
                     >CodeForge</span>
                 </div>
 
@@ -107,7 +123,7 @@ function Navbar() {
                                             className="block px-4 py-2 text-sm hover:bg-gray-100 hover:text-black transition"
                                             onClick={handleLogout}
                                         >
-                                            Sign out
+                                            {logoutStatus}
                                         </span>
                                     </li>
                                 </ul>

@@ -1,10 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { healthCheck } from '../server/server';
+import { healthCheck, healthCheckApiServer } from '../server/server';
 
 function HomePage() {
   const navigate = useNavigate();
   const [status, setStatus] = useState('Connecting to Server...');
+  const [statusDashboard, setstatusDashboard] = useState('Connecting to api-Server...');
+
+  useEffect(() => {
+    healthCheckApiServer()
+      .then((response) => {
+        if (response.data) {
+          setstatusDashboard('Go to Dashboard');
+        }
+      })
+      .catch((error) => {
+        console.error('Error while checking health:', error);
+      });
+  }, []);
 
   useEffect(() => {
     healthCheck()
@@ -30,15 +43,21 @@ function HomePage() {
 
       {/* Main Button Section */}
       <div className="flex-grow flex flex-col justify-center items-center gap-3">
-        <button
-          className="text-2xl w-60 h-20 bg-blue-400 text-white px-6 py-3 rounded-3xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:bg-blue-500"
-          onClick={() => navigate('/user/dashboard')}
-        >
-          Go to Dashboard
-        </button>
+      
 
         <button
-          className={`text-2xl bg-blue-500 w-60 h-20 text-white px-6 py-3 rounded-3xl shadow-lg transform transition-all duration-300 hover:scale-105 ${
+          className={`text-2xl w-60 h-20 bg-blue-600 text-white px-6 py-3 rounded-3xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:bg-blue-500 ${
+            statusDashboard !== 'Go to Dashboard'
+              ? 'opacity-50 cursor-not-allowed'
+              : 'hover:bg-blue-500'
+          }`}
+          onClick={() => navigate('/user/dashboard')}
+          disabled={statusDashboard !== 'Go to Dashboard'}
+        >
+          {statusDashboard}
+        </button>
+        <button
+          className={`text-2xl w-60 h-20 bg-blue-600 text-white px-6 py-3 rounded-3xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:bg-blue-500 ${
             status !== 'Start Coding'
               ? 'opacity-50 cursor-not-allowed'
               : 'hover:bg-blue-500'
