@@ -7,9 +7,16 @@ const ContestSchema = new Schema({
         ref: 'User',
         required: true
     },
+    label: {
+        type: String,
+        required: true,
+        default: 'Public',
+        enum: ['Public', 'Private'],
+    },
     title:{
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     StartTime: {
         type: Date,
@@ -23,10 +30,6 @@ const ContestSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Question'
     }],
-    Participants: [{
-        type: Schema.Types.ObjectId,
-        ref: 'User'
-    }]
 
 }, {timestamps: true});
 

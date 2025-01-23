@@ -24,6 +24,10 @@ function CreateClass() {
                 console.log("User not logged in");
                 return;
             }
+            if(!classroomName || !classroomCode) {
+                alert("Please fill all the fields");
+                return;
+            }
             const data = {
                 owner: user._id,
                 name: classroomName,

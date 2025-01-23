@@ -3,6 +3,7 @@ import { useUser } from '../Store/zustand.js';
 import { LogOut } from '../../server/server.js';
 import Button from './Button.jsx';
 import { useNavigate } from 'react-router-dom';
+import { getCurrentUser } from '../../server/server.js';
 
 function Navbar() {
     const [isDropdownOpen, setDropdownOpen] = useState(false);
@@ -22,19 +23,37 @@ function Navbar() {
             console.log("Logout clicked");
             setLogoutStatus('Logging out...');
             const res = await LogOut();
-            if(!res || res.status >= 300) {
+            if (!res || res.status >= 300) {
                 setLogoutStatus('Logout');
                 return;
             }
             setUser(null);
             setDropdownOpen(!isDropdownOpen);
-            console.log(res);
+            // console.log(res);
+            console.log('Logged out successfully');
             alert(res?.message || "Logged out successfully 😀");
         } catch (error) {
             setLogoutStatus('Logout');
             console.error('Error while logging out:- ', error);
         }
 
+    }
+
+    const handleAuthNav = async function (path) {
+        const res = await getCurrentUser();
+        if (res) {
+            // console.log('User authenticated:', res);
+            console.log('User authenticated:');
+            
+            if (user?._id !== res?._id) {
+                alert('User not authenticated');
+                navigate('/login-user');
+            }
+            navigate(String(path));
+        } else {
+            alert('No user found');
+            navigate('/login-user');
+        }
     }
 
     useEffect(() => {
@@ -68,10 +87,10 @@ function Navbar() {
                         className="text-gray-800 hover:text-blue-700 transition">Dashboard</div>
                     <div
                         onClick={() => navigate("/user/classrooms")}
-                        className="text-gray-800 hover:text-blue-700 transition">ClassRooms</div>
+                        className="text-gray-800 hover:text-blue-700 transition">Enrolled</div>
                     <div
                         onClick={() => navigate("/user/my-classrooms")}
-                        className="text-gray-800 hover:text-blue-700 transition">My ClassRooms</div>
+                        className="text-gray-800 hover:text-blue-700 transition">Authored</div>
                     <div
                         onClick={() => navigate("/user/contests")}
                         className="text-gray-800 hover:text-blue-700 transition">Contests</div>

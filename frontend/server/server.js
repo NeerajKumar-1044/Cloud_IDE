@@ -35,12 +35,11 @@ const setfiledata = async (path, data) => {
     }
   }
 
-
   const GoogleAuthLogin = async (response) => {
     const { credential } = response;
     try {
       const data = await axios.post(
-        `${api_backend_url}/api/users/google-login`,
+        `${api_backend_url}/api/auth/google-login`,
         { token: credential },
         { withCredentials: true }
       );
@@ -52,9 +51,19 @@ const setfiledata = async (path, data) => {
 
 };
 
+const getCurrentUser = async () => {
+    try {
+        const response = await axios.get(`${api_backend_url}/api/user/get-current-user`, { withCredentials: true });
+        // console.log(response);
+        return response?.data?.user;
+    } catch (error) {
+        console.error('Error while fetching current user:', error);
+    }
+}
+
 const LogOut = async () => {
     try {
-        const response = await axios.get(`${api_backend_url}/api/users/logout`, { withCredentials: true });
+        const response = await axios.get(`${api_backend_url}/api/auth/logout`, { withCredentials: true });
         return response;
     } catch (error) {
         console.error('Error while logging out:', error);
@@ -78,6 +87,55 @@ const getAllClassRooms = async () => {
         console.error('Error while fetching classrooms:', error);
     }
 }
+
+const joinClassRoom = async (data) => {
+    try {
+        const response = await axios.post(`${api_backend_url}/api/classroom/join-classroom`, {joinCode: data}, { withCredentials: true });
+        console.log(response.data);
+        return response.data;
+    } catch (error) {
+        console.error('Error while joining classroom:', error);
+    }
+}
+
+const getEnrolledClassrooms = async () => {
+    try {
+        const response = await axios.get(`${api_backend_url}/api/classroom/get-enrolled-classroom`, { withCredentials: true });
+        return response.data;
+    } catch (error) {
+        console.error('Error while fetching enrolled classrooms:', error);
+    }
+}
+
+const getAllQuestions = async () => {
+    try {
+        const response = await axios.get(`${api_backend_url}/api/question/get-all-question`, { withCredentials: true });
+        console.log(response.data.Questions);
+        return response.data;
+    } catch (error) {
+        console.error('Error while fetching questions:', error);
+    }
+}
+
+const CreateQuestion = async (data) => {
+    try {
+        const response = await axios.post(`${api_backend_url}/api/question/create-question`, {...data}, { withCredentials: true });
+        // console.log(response.data?.CreateQuestion);
+        return response?.data?.CreateQuestion;
+    } catch (error) {
+        console.error('Error while creating question:', error);
+    }
+}
+
+const getQuestionById = async (id) => {
+    try {
+        const response = await axios.get(`${api_backend_url}/api/question/get-question?id=${id}`, { withCredentials: true });
+        console.log(response.data?.Question);
+        return response.data?.Question;
+    } catch (error) {
+        console.error('Error while fetching question:', error);
+    }
+}
   
 export { 
     healthCheck,
@@ -88,5 +146,11 @@ export {
     GoogleAuthLogin,
     CreateClassRoom,
     LogOut,
-    getAllClassRooms
+    getAllClassRooms,
+    joinClassRoom,
+    getCurrentUser,
+    getEnrolledClassrooms,
+    getAllQuestions,
+    CreateQuestion,
+    getQuestionById,
 };

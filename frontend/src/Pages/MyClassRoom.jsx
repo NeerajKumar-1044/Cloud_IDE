@@ -10,7 +10,7 @@ function MyClassRoom() {
   const fetchData = useCallback(async () => {
     const data = await getAllClassRooms();
     setData(data);
-    console.log(data);
+    // console.log(data);
   }, []);
 
   useEffect(() => {
@@ -19,7 +19,7 @@ function MyClassRoom() {
 
   return (
     <div className='flex flex-wrap justify-center gap-4 p-4'>
-      {Data.map((item) => (
+      {Data?.map((item) => (
         <ClassCard 
           key={item._id} 
           name={item.name}

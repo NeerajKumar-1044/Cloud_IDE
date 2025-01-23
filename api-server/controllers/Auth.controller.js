@@ -22,22 +22,28 @@ const GenerateToken = async (userid) => {
 
 // Register user
 export const registerUser = async (req, res) => {
-  const { name, email, password, role } = req.body;
+  const { name, email, password } = req.body;
 
   try {
     const userExists = await User.findOne({ email });
     if (userExists) return res.status(400).json({ message: 'User already exists' });
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const newUser = new User({ name, email, password: hashedPassword, role });
+    const newUser = new User({ 
+      username: name, 
+      email: email, 
+      password: password,
+    });
     await newUser.save();
 
-    const AccessToken = await GenerateToken(user?._id);
+    const AccessToken = await GenerateToken(newUser?._id);
     
+    const user = await User.findById(newUser?._id)
+    .select('-password -refreshToken -classRoomEnrolledIn -classRoomOwned -solvedQuestions -contestsParticipated');
+
     res
+    .status(201)
     .cookie('AccessToken', AccessToken, options)
-    .json({ newUser });
+    .json({user});
 
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err });
@@ -52,14 +58,17 @@ export const loginUser = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: 'User not found' });
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await user.isPasswordCorrect(password);
     if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
     const AccessToken = await GenerateToken(user?._id);
+    const loggedInUser = await User.findById(user?._id)
+    .select('-password -refreshToken -classRoomEnrolledIn -classRoomOwned -solvedQuestions -contestsParticipated');
     
     res
+    .status(200)
     .cookie('AccessToken', AccessToken, options)
-    .json({ user });
+    .json({ loggedInUser });
 
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err });
@@ -87,10 +96,13 @@ export const googleAuth = async (req, res) => {
     }
 
     const AccessToken = await GenerateToken(user?._id);
+
+    const CreatedUser = await User.findById(user?._id)
+    .select('-password -refreshToken -classRoomEnrolledIn -classRoomOwned -solvedQuestions -contestsParticipated');
     
     res
     .cookie('AccessToken', AccessToken, options)
-    .json({ user });
+    .json({ user: CreatedUser });
 
   } catch (err) {
     res.status(400).json({ message: 'Google authentication failed', error: err });
@@ -101,7 +113,7 @@ export const googleAuth = async (req, res) => {
 // Logout user
 export const logoutUser = async(req, res) => {
 
-  const userid = req.user._id;
+  const userid = req?.user?._id;
   try {
     await User.findByIdAndUpdate(userid, { refreshToken: '' }, { new: true });
   } catch (error) {

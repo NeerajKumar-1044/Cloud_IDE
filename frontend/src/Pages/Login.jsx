@@ -14,7 +14,7 @@ function Login() {
 
     const handleGoogleLogin = async (response) => {
         console.log('Google Login');
-        // e.preventDefault()
+        // console.log(response);
         try {
             setloading(true);
             const user = await GoogleAuthLogin(response);

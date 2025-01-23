@@ -2,6 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import authRoutes from './routes/auth.route.js';
 import classRoutes from './routes/classroom.route.js';
+import questionRoutes from './routes/question.route.js';
+import contestRoutes from './routes/contest.route.js';
+import userRouter from './routes/user.route.js'
 import cookieParser from 'cookie-parser';
 
 
@@ -32,6 +35,9 @@ app.get('/health-check', (req, res) => {
 });
 
 
-app.use('/api/users', authRoutes);
+app.use('/api/auth', authRoutes);
 app.use('/api/classroom', classRoutes);
+app.use('/api/question', questionRoutes);
+app.use('/api/contest', contestRoutes);
+app.use('/api/user', userRouter);
 

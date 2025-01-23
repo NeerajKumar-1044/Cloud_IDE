@@ -3,7 +3,9 @@ import React from 'react';
 function ClassCard({ name, class_Name, onClick }) {
     return (
         <div 
-            className={`w-64 h-40 bg-gradient-to-r from-blue-400 via-blue-500 to-indigo-600 rounded-xl shadow-lg transform hover:scale-105 hover:shadow-xl transition-all duration-300 ease-in-out ${class_Name}`} 
+            className={`w-64 h-40 bg-gradient-to-r from-blue-400 via-blue-500
+                 to-indigo-600 rounded-xl shadow-lg transform hover:scale-105 hover:shadow-xl transition-all 
+                 duration-300 ease-in-out cursor-pointer ${class_Name}`} 
             onClick={onClick}
         >
             {/* Card Content */}
