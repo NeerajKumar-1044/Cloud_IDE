@@ -85,7 +85,6 @@ export const googleAuth = async (req, res) => {
     // console.log(googleUser);
     let user = await User.findOne({ email: googleUser.email });
 
-    console.log("user already exists:- ");
     if (!user) {
         user = await User.create({
           username: googleUser.given_name,
@@ -93,13 +92,16 @@ export const googleAuth = async (req, res) => {
           password: process.env.PASSWORD_KEY
       });
       await user.save();
+    }else{
+      console.log("user already exists:- ");
     }
 
     const AccessToken = await GenerateToken(user?._id);
 
     const CreatedUser = await User.findById(user?._id)
-    .select('-password -refreshToken -classRoomEnrolledIn -classRoomOwned -solvedQuestions -contestsParticipated');
-    
+    .select('-password -refreshToken -classRoomEnrolledIn -classRoomOwned -streak -solvedQuestions -contestsParticipated');
+    console.log("sending data");
+
     res
     .cookie('AccessToken', AccessToken, options)
     .json({ user: CreatedUser });

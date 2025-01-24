@@ -43,7 +43,7 @@ const setfiledata = async (path, data) => {
         { token: credential },
         { withCredentials: true }
       );
-      // console.log(data?.data?.user);
+    //   console.log(data?.data?.user);
       return data?.data?.user;
     } catch (err) {
       console.log('Google authentication failed or user already exists', err);
@@ -136,6 +136,28 @@ const getQuestionById = async (id) => {
         console.error('Error while fetching question:', error);
     }
 }
+
+const RunCode = async (data) => {
+    try {
+        const response = await axios.post(`${api_backend_url}/api/question/run-code`, {...data}, {withCredentials: true});
+        console.log(response);
+        return response;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
+const SubmitCode = async (data) => {
+    try {
+        const response = await axios.post(`${api_backend_url}/api/question/submit-code`, {...data}, {withCredentials: true});
+        console.log(response);
+        return response;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
   
 export { 
     healthCheck,
@@ -153,4 +175,6 @@ export {
     getAllQuestions,
     CreateQuestion,
     getQuestionById,
+    RunCode,
+    SubmitCode,
 };

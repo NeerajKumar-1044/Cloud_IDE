@@ -107,9 +107,27 @@ const GetQuestionById = async (req, res) => {
     }
 }
 
+const RunCode = async (req, res) => {
+    const {questionId, code, testCases} = req.body;
+
+    res
+    .status(200)
+    .json({message: "Code Compiled successfully"})
+}
+
+const SubmitCode = async (req, res) => {
+    const {questionId, code, testCases} = req.body;
+
+    res
+    .status(200)
+    .json({message: "Code Compiled successfully"})
+}
+
 
 export {
     CreateQuestion,
     GetAllQuestions,
-    GetQuestionById
+    GetQuestionById,
+    SubmitCode,
+    RunCode,
 }
